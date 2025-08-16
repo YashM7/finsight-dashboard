@@ -3,9 +3,11 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-
 import { useEffect, useState } from "react";
 import axios from "axios";
+
+// Base URL from .env file
+const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 type UserDetails = {
   firstName: string;
@@ -19,7 +21,6 @@ export default function UserInfoCard() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => { 
@@ -27,7 +28,7 @@ export default function UserInfoCard() {
     try {
       const token = localStorage.getItem('authToken'); // or sessionStorage, or however you're storing it
 
-      const response = await axios.get<UserDetails>('http://localhost:8080/user', {
+      const response = await axios.get<UserDetails>(`${BASE_URL}/user`, {
         headers: {
           Authorization: `Bearer ${token}`, // 🛡️ Attach token to the request
         },
@@ -38,8 +39,6 @@ export default function UserInfoCard() {
       setEmail(response.data.email);
     } catch (err) {
       setError('Failed to fetch transactions.');
-    } finally {
-      setLoading(false);
     }
   };
   fetchUserDetails();
@@ -53,7 +52,7 @@ export default function UserInfoCard() {
       const token = localStorage.getItem("authToken");
 
       await axios.put(
-        "http://localhost:8080/user",
+        `${BASE_URL}/user`,
         {
           firstName,
           lastName,
