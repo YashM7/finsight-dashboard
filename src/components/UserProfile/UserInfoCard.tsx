@@ -21,7 +21,6 @@ export default function UserInfoCard() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => { 
   const fetchUserDetails = async () => {
@@ -37,8 +36,8 @@ export default function UserInfoCard() {
       setFirstName(response.data.firstName);
       setLastName(response.data.lastName);
       setEmail(response.data.email);
-    } catch (err) {
-      setError('Failed to fetch transactions.');
+    } catch (error) {
+      console.error("Error fetching user details", error);
     }
   };
   fetchUserDetails();
@@ -73,7 +72,6 @@ export default function UserInfoCard() {
       closeModal();
     } catch (error) {
       console.error("Error updating user details", error);
-      setError("Failed to update user details.");
     }
   };
 
