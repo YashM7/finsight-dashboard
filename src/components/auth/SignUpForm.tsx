@@ -23,7 +23,16 @@ export default function SignUpForm() {
     
     // Basic form validation
     if (!firstName || !lastName || !email || !password) {
-      alert('Please fill in all required fields');
+      toast.custom((t) => (
+        <div
+          className={`${
+            t.visible ? "animate-enter" : "animate-leave"
+          } max-w-md w-full bg-white text-gray-800 px-4 py-3 shadow-lg rounded-lg border border-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 flex justify-between items-center`}
+        >
+          <span>Please fill in all required fields</span>
+        </div>
+      ));
+      // alert('Please fill in all required fields');
       return;
     }
 
@@ -69,8 +78,20 @@ export default function SignUpForm() {
     } catch (error:any) {
       console.error("Signup failed:", error);
       if(error.status === 409) {
-        alert("Email already exists. Please login.");
-        window.location.href = "http://localhost:5173/signin";
+        toast.custom((t) => (
+        <div
+          className={`${
+            t.visible ? "animate-enter" : "animate-leave"
+          } max-w-md w-full bg-white text-gray-800 px-4 py-3 shadow-lg rounded-lg border border-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 flex justify-between items-center`}
+        >
+          <span>Email already exists. Please login.</span>
+        </div>
+      ));
+
+        setTimeout(() => {
+          window.location.href = "http://localhost:5173/signin";
+        }, 3000);
+
         return;
       }
       alert("Signup failed. Please try again.");
