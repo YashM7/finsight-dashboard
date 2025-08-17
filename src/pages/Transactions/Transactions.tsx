@@ -11,6 +11,9 @@ import axios from "axios";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 
+// Base URL from .env file
+const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+
 type Transaction = {
     merchant: string;
     categoryName: string;
@@ -35,7 +38,7 @@ export default function RecentTransactionsCard() {
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get<Transaction[]>('http://localhost:8080/transactions', {
+      const response = await axios.get<Transaction[]>(`${BASE_URL}/transactions`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,7 +58,7 @@ export default function RecentTransactionsCard() {
     <>
     <PageMeta
         title="Transactions"
-        description="This is React.js Blank Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        description="This is FinSight Transactions"
       />
       <PageBreadcrumb pageTitle="Transactions" />
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-4 pb-3 pt-4 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6">
@@ -77,18 +80,21 @@ export default function RecentTransactionsCard() {
               >
                 Merchant
               </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Category
-              </TableCell>
+
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
                 Price
               </TableCell>
+
+              <TableCell
+                isHeader
+                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Category
+              </TableCell>
+
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -114,10 +120,6 @@ export default function RecentTransactionsCard() {
                   </div>
                 </TableCell>
 
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {t.categoryName}
-                </TableCell>
-
                 <TableCell className={`py-3 text-theme-sm ${
                     t.transactionType === "EXPENSE" ? "text-red-500" : "text-green-500"
                 }`}>
@@ -125,6 +127,10 @@ export default function RecentTransactionsCard() {
                     style: "currency",
                     currency: "USD",    
                   })}`}
+                </TableCell>
+
+                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                  {t.categoryName}
                 </TableCell>
 
                 <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
