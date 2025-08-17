@@ -168,7 +168,7 @@ export default function Report() {
                   : "bg-green-600 text-white hover:bg-green-700"
               }`}
             >
-              Download Excel
+              Download File
             </button>
           </div>
 
