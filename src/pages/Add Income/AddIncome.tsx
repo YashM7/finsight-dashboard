@@ -1,9 +1,12 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import DatePicker from "../../components/form/date-picker.tsx";
+
+// Base URL from .env file
+const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 
 type CategoryType = "INCOME" | "EXPENSE";
@@ -38,7 +41,7 @@ export default function AddIncome() {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await axios.get<string[]>("http://localhost:8080/transactions/income-categories", {
+        const response = await axios.get<string[]>(`${BASE_URL}/transactions/income-categories`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -99,7 +102,7 @@ export default function AddIncome() {
     console.log(finalFormData);
     try {
       const token = localStorage.getItem("authToken");
-      await axios.post("http://localhost:8080/transactions", finalFormData, {
+      await axios.post(`${BASE_URL}/transactions`, finalFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -120,7 +123,7 @@ export default function AddIncome() {
       });
       setNewCategoryName("");
     } catch (error) {
-      toast.error("Failed to add transaction. Please try again.");
+      toast.error((error as AxiosError)?.message || "Failed to fetch traansactions");
     }
   };
 
