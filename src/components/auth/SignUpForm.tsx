@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
+import axios from "axios";
 
 import { signup, SignupPayload } from "../../api/auth";
 import toast from "react-hot-toast";
+
+// Base URL from .env file
+const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 
 export default function SignUpForm() {
@@ -17,6 +21,27 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<"starting" | "online">(
+    "starting"
+  );
+
+  useEffect(() => {
+    const checkBackend = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/user/ping`);
+        console.log(res);
+        if (res.status === 200) {
+          setBackendStatus("online");
+        } else {
+          setTimeout(checkBackend, 5000); // retry after 5s
+        }
+      } catch {
+        setTimeout(checkBackend, 5000); // keep retrying until backend wakes up
+      }
+    };
+
+    checkBackend();
+  }, []);
 
   const handleClick = async (e:any) => {
     e.preventDefault();
@@ -32,16 +57,14 @@ export default function SignUpForm() {
           <span>Please fill in all required fields</span>
         </div>
       ));
-      // alert('Please fill in all required fields');
       return;
     }
 
-    // Optional: email format validation
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailRegex.test(email)) {
-    //   alert("Please enter a valid email address.");
-    //   return;
-    // }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
     if (password.length < 8) {
       toast.error("Password must be at least 8 characters long");
@@ -94,7 +117,8 @@ export default function SignUpForm() {
 
         return;
       }
-      alert("Signup failed. Please try again.");
+      alert("Signup failed. Please refresh the page and try again!");
+      window.location.reload();
     }
 
   };
@@ -111,6 +135,20 @@ export default function SignUpForm() {
         </Link>
       </div>
       <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
+
+      <div className="flex items-center gap-2 mb-4">
+        <span
+          className={`inline-block w-3 h-3 rounded-full ${
+            backendStatus === "online" ? "bg-green-500" : "bg-red-500"
+          }`}
+        />
+        <p className="text-sm text-gray-600 dark:text-gray-300">
+          {backendStatus === "online"
+            ? "All Systems Online"
+            : "⏳ Starting backend service, please wait up to 30s..."}
+        </p>
+      </div>
+      
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
@@ -118,6 +156,11 @@ export default function SignUpForm() {
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Enter your details to sign up!
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              To view App demo Sign In with:
+              <br />
+              Email: demo@gmail.com and Password: demo@gmail.com 
             </p>
           </div>
           <div>
@@ -213,8 +256,14 @@ export default function SignUpForm() {
                 <div>
                   <button
                     onClick={handleClick}
-                    className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                      Sign Up
+                    disabled={backendStatus !== "online"}   // 🔒 disable if backend is not ready
+                    className={`flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg shadow-theme-xs
+                      ${backendStatus !== "online"
+                        ? "bg-gray-400 cursor-not-allowed"
+                        : "bg-brand-500 hover:bg-brand-600"
+                      }`}
+                  >
+                    Sign Up
                   </button>
                 </div>
               </div>
