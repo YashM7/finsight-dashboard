@@ -4,7 +4,7 @@ import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import { login, LoginPayload } from "../../api/auth";
 
@@ -38,7 +38,7 @@ export default function SignInForm() {
     checkBackend();
   }, []);
 
-  const handleClick = async (e:any) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     // Basic form validation
@@ -58,9 +58,10 @@ export default function SignInForm() {
       console.log("Login successful:");
       console.log(response);
       window.location.href = "http://localhost:5173/";
-    } catch (error:any) {
+    } catch (error) {
       console.log(error);
-      if(error.status === 401) {
+      const axiosError = error as AxiosError;
+      if(axiosError.status === 401) {
         toast.error("Invalid credentials!");
         setPassword("");
         return;

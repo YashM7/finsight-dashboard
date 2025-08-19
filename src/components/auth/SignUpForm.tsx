@@ -4,7 +4,7 @@ import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import { signup, SignupPayload } from "../../api/auth";
 import toast from "react-hot-toast";
@@ -43,7 +43,7 @@ export default function SignUpForm() {
     checkBackend();
   }, []);
 
-  const handleClick = async (e:any) => {
+  const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     
     // Basic form validation
@@ -98,9 +98,10 @@ export default function SignUpForm() {
       const response = await signup(payload);
       console.log(response);
       window.location.href = "http://localhost:5173/";
-    } catch (error:any) {
+    } catch (error) {
+      const axiosError = error as AxiosError;
       console.error("Signup failed:", error);
-      if(error.status === 409) {
+      if(axiosError.status === 409) {
         toast.custom((t) => (
         <div
           className={`${
