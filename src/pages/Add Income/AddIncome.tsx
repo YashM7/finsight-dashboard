@@ -130,8 +130,8 @@ export default function AddIncome() {
   return (
     <div>
       <PageMeta
-        title="React.js Blank Dashboard | TailAdmin"
-        description="This is React.js Blank Dashboard page"
+        title="Add Income"
+        description="This is FinSight Add Income page"
       />
       <PageBreadcrumb pageTitle="Add Income" />
 
