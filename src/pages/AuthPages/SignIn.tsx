@@ -6,8 +6,8 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="Sign Ip • FinSight"
-        description="This is FinSight SignIp Page"
+        title="Sign In • FinSight"
+        description="This is FinSight SignIn Page"
       />
       <AuthLayout>
         <SignInForm />
