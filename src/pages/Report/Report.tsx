@@ -39,7 +39,7 @@ export default function Report() {
     try {
       const token = localStorage.getItem("authToken");
       const res = await axios.get<Transaction[]>(
-        `${BASE_URL}/transactions`,
+        `${BASE_URL}/transactions/report`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
