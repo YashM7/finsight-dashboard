@@ -80,17 +80,12 @@ export default function RecentTransactionsCard() {
               >
                 Merchant
               </TableCell>
+
               <TableCell
                 isHeader
                 className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Category
-              </TableCell>
-              <TableCell
-                isHeader
-                className="py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Price
+                Amount
               </TableCell>
               <TableCell
                 isHeader
@@ -115,10 +110,6 @@ export default function RecentTransactionsCard() {
                       </p>
                     </div>
                   </div>
-                </TableCell>
-
-                <TableCell className="py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {t.categoryName}
                 </TableCell>
 
                 <TableCell className={`py-3 text-theme-sm ${
