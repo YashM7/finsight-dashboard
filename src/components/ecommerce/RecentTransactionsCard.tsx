@@ -38,7 +38,7 @@ export default function RecentTransactionsCard() {
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get<Transaction[]>(`${BASE_URL}/transactions`, {
+      const response = await axios.get<Transaction[]>(`${BASE_URL}/transactions/top-three`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
