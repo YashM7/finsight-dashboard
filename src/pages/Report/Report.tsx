@@ -6,10 +6,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 
-// Base URL from .env file
 const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
-// ✅ Define Transaction type
 type Transaction = {
   merchant: string;
   categoryName: string;
@@ -21,6 +19,7 @@ type Transaction = {
 export default function Report() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filtered, setFiltered] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const [startDate, setStartDate] = useState<Date | null>(
@@ -36,6 +35,7 @@ export default function Report() {
   }, []);
 
   const fetchData = async () => {
+    setLoading(true); // Start loading
     try {
       const token = localStorage.getItem("authToken");
       const res = await axios.get<Transaction[]>(
@@ -50,10 +50,11 @@ export default function Report() {
       setFiltered(res.data);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
-  // ✅ Apply filters automatically when dependencies change
   useEffect(() => {
     applyFilters();
   }, [startDate, endDate, type, transactions]);
@@ -118,59 +119,58 @@ export default function Report() {
             Transaction Report
           </h3>
 
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-            <label className="text-sm text-gray-700 dark:text-gray-300">
-              From
-            </label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              dateFormat="yyyy-MM-dd"
-              className="w-full sm:w-auto border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-white/[0.05] dark:text-white"
-              placeholderText="Start Date"
-            />
+          {!loading && (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+              <label className="text-sm text-gray-700 dark:text-gray-300">From</label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                dateFormat="yyyy-MM-dd"
+                className="w-full sm:w-auto border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-white/[0.05] dark:text-white"
+                placeholderText="Start Date"
+              />
 
-            <label className="text-sm text-gray-700 dark:text-gray-300">
-              To
-            </label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate || undefined}
-              dateFormat="yyyy-MM-dd"
-              className="w-full sm:w-auto border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-white/[0.05] dark:text-white"
-              placeholderText="End Date"
-            />
+              <label className="text-sm text-gray-700 dark:text-gray-300">To</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || undefined}
+                dateFormat="yyyy-MM-dd"
+                className="w-full sm:w-auto border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-white/[0.05] dark:text-white"
+                placeholderText="End Date"
+              />
 
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value as "ALL" | "INCOME" | "EXPENSE")}
-              className="w-full sm:w-auto border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-white/[0.05] dark:text-white"
-            >
-              <option value="ALL">All</option>
-              <option value="INCOME">Income</option>
-              <option value="EXPENSE">Expense</option>
-            </select>
+              <select
+                value={type}
+                onChange={(e) =>
+                  setType(e.target.value as "ALL" | "INCOME" | "EXPENSE")
+                }
+                className="w-full sm:w-auto border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm dark:bg-white/[0.05] dark:text-white"
+              >
+                <option value="ALL">All</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expense</option>
+              </select>
 
-            <button
-              onClick={downloadExcel}
-              disabled={filtered.length === 0}
-              className={`w-full sm:w-auto px-4 py-2 rounded-lg transition ${
-                filtered.length === 0
-                  ? "bg-gray-400 text-white cursor-not-allowed"
-                  : "bg-green-600 text-white hover:bg-green-700"
-              }`}
-            >
-              Download File
-            </button>
-          </div>
+              <button
+                onClick={downloadExcel}
+                disabled={filtered.length === 0}
+                className={`w-full sm:w-auto px-4 py-2 rounded-lg transition ${
+                  filtered.length === 0
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-green-600 text-white hover:bg-green-700"
+                }`}
+              >
+                Download File
+              </button>
+            </div>
+          )}
 
           {/* Transactions Table */}
           <div className="overflow-x-auto">
@@ -195,7 +195,16 @@ export default function Report() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length > 0 ? (
+                {loading ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="p-4 text-gray-500 dark:text-gray-400 text-sm text-center"
+                    >
+                      Getting all transactions...
+                    </td>
+                  </tr>
+                ) : filtered.length > 0 ? (
                   filtered.map((t, i) => (
                     <tr
                       key={i}
@@ -221,12 +230,10 @@ export default function Report() {
                       </td>
 
                       <td className="p-3 text-sm dark:text-white/90">
-                        {`${t.transactionDate[0]}-${String(
-                          t.transactionDate[1]
-                        ).padStart(2, "0")}-${String(t.transactionDate[2]).padStart(
+                        {`${t.transactionDate[0]}-${String(t.transactionDate[1]).padStart(
                           2,
                           "0"
-                        )}`}
+                        )}-${String(t.transactionDate[2]).padStart(2, "0")}`}
                       </td>
                     </tr>
                   ))
