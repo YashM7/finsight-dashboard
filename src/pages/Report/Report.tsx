@@ -3,10 +3,12 @@ import axios from "axios";
 import * as XLSX from "xlsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import toast from "react-hot-toast";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 type Transaction = {
   merchant: string;
@@ -39,7 +41,7 @@ export default function Report() {
     try {
       const token = localStorage.getItem("authToken");
       const res = await axios.get<Transaction[]>(
-        `${BASE_URL}/transactions/report`,
+        `${BACKEND_URL}/transactions/report`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,8 +50,12 @@ export default function Report() {
       );
       setTransactions(res.data);
       setFiltered(res.data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
+      toast.error("You have been logged out because of inactivity.");
+      setTimeout(function () {
+        window.location.href = `${FRONTEND_URL}/signin`;
+      } , 4000)
     } finally {
       setLoading(false); // End loading
     }

@@ -1,8 +1,10 @@
 import { useState, useEffect} from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-// Base URL from .env file
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 export default function BalanceCard() {
 
@@ -15,7 +17,7 @@ export default function BalanceCard() {
     const token = localStorage.getItem("authToken");
     
     axios
-      .get(`${BASE_URL}/transactions/balance`, {
+      .get(`${BACKEND_URL}/transactions/balance`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -27,6 +29,10 @@ export default function BalanceCard() {
       })
       .catch((error) => {
         console.error("Error fetching balance:", error);
+        toast.error("You have been logged out because of inactivity.");
+        setTimeout(function() {
+            window.location.href = `${FRONTEND_URL}/signin`;
+        }, 4000);
       })
       .finally(() => {
         setLoading(false);

@@ -5,8 +5,8 @@ import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import DatePicker from "../../components/form/date-picker.tsx";
 
-// Base URL from .env file
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 
 type CategoryType = "INCOME" | "EXPENSE";
@@ -41,7 +41,7 @@ export default function AddExpense() {
     const fetchCategories = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await axios.get<string[]>(`${BASE_URL}/transactions/expense-categories`, {
+        const response = await axios.get<string[]>(`${BACKEND_URL}/transactions/expense-categories`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -49,8 +49,11 @@ export default function AddExpense() {
       });
       setCategoryOptions(response.data);
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        toast.error("Failed to fetch categories");
+        console.error("Error fetching balance:", error);
+        toast.error("You have been logged out because of inactivity.");
+        setTimeout(function() {
+            window.location.href = `${FRONTEND_URL}/signin`;
+        }, 4000);
       }
     };
     fetchCategories();
@@ -102,7 +105,7 @@ export default function AddExpense() {
     console.log(finalFormData);
     try {
       const token = localStorage.getItem("authToken");
-      await axios.post(`${BASE_URL}/transactions`, finalFormData, {
+      await axios.post(`${BACKEND_URL}/transactions`, finalFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

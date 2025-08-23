@@ -5,9 +5,10 @@ import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
-// Base URL from .env file
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 type UserDetails = {
   firstName: string;
@@ -25,11 +26,11 @@ export default function UserInfoCard() {
   useEffect(() => { 
   const fetchUserDetails = async () => {
     try {
-      const token = localStorage.getItem('authToken'); // or sessionStorage, or however you're storing it
+      const token = localStorage.getItem('authToken');
 
-      const response = await axios.get<UserDetails>(`${BASE_URL}/user`, {
+      const response = await axios.get<UserDetails>(`${BACKEND_URL}/user`, {
         headers: {
-          Authorization: `Bearer ${token}`, // 🛡️ Attach token to the request
+          Authorization: `Bearer ${token}`,
         },
       });
       setuserDetails(response.data);
@@ -38,6 +39,10 @@ export default function UserInfoCard() {
       setEmail(response.data.email);
     } catch (error) {
       console.error("Error fetching user details", error);
+      toast.error("You have been logged out because of inactivity.");
+      setTimeout(function() {
+        window.location.href = `${FRONTEND_URL}/signin`;
+      }, 4000);
     }
   };
   fetchUserDetails();
@@ -51,7 +56,7 @@ export default function UserInfoCard() {
       const token = localStorage.getItem("authToken");
 
       await axios.put(
-        `${BASE_URL}/user`,
+        `${BACKEND_URL}/user`,
         {
           firstName,
           lastName,

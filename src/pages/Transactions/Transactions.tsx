@@ -8,10 +8,12 @@ import {
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 type Transaction = {
     merchant: string;
@@ -40,14 +42,18 @@ export default function RecentTransactionsCard() {
       setLoading(true);
       try {
         const token = localStorage.getItem('authToken');
-        const response = await axios.get<Transaction[]>(`${BASE_URL}/transactions`, {
+        const response = await axios.get<Transaction[]>(`${BACKEND_URL}/transactions`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setTransactions(response.data);
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.error("Error fetching balance:", error);
+        toast.error("You have been logged out because of inactivity.");
+        setTimeout(function() {
+            window.location.href = `${FRONTEND_URL}/signin`;
+        }, 4000);
       } finally {
         setLoading(false);
       }

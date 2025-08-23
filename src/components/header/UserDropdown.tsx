@@ -4,6 +4,8 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { useEffect } from "react";
 import axios from "axios";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+
 type UserDetails = {
   firstName: string;
   lastName: string;
@@ -27,28 +29,21 @@ export default function UserDropdown() {
   }
 
   const [userDetails, setuserDetails] = useState<UserDetails>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
   const fetchUserDetails = async () => {
     try {
-      const token = localStorage.getItem('authToken'); // or sessionStorage, or however you're storing it
+      const token = localStorage.getItem('authToken');
 
-      const response = await axios.get<UserDetails>('http://localhost:8080/user', {
+      const response = await axios.get<UserDetails>(`${BACKEND_URL}/user`, {
         headers: {
-          Authorization: `Bearer ${token}`, // 🛡️ Attach token to the request
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log(response)
-      console.log(response.data);
       setuserDetails(response.data);
-      console.log(setuserDetails);
-    } catch (err) {
-      setError('Failed to fetch transactions.');
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.log("Failed to fetch user.", error);
     }
   };
 

@@ -7,11 +7,9 @@ import {
 } from "../ui/table";
 
 import { useState, useEffect } from "react";
-import axios, { AxiosError } from "axios";
-import toast from "react-hot-toast";
+import axios from "axios";
 
-// Base URL from .env file
-const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 type Transaction = {
     merchant: string;
@@ -38,14 +36,14 @@ export default function RecentTransactionsCard() {
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await axios.get<Transaction[]>(`${BASE_URL}/transactions/top-three`, {
+      const response = await axios.get<Transaction[]>(`${BACKEND_URL}/transactions/top-three`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setTransactions(response.data.slice(0, 3));
     } catch (err) {
-      toast.error((err as AxiosError)?.message || "Failed to fetch traansactions");
+      console.log(err);
     }
   };
 
