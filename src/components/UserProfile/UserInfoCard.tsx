@@ -51,7 +51,12 @@ export default function UserInfoCard() {
 
   
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = async () => {
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!firstName.trim() || !lastName.trim()) {
+    return;
+  }
     try {
       const token = localStorage.getItem("authToken");
 
@@ -148,8 +153,9 @@ export default function UserInfoCard() {
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
               Edit Personal Information
             </h4>
-            <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+            <p className="flex flex-col mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
+              <span>Update your details to keep your profile up-to-date.</span>
+              <span>First Name and Last Name cannot be empty.</span>
             </p>
           </div>
           <form className="flex flex-col">
@@ -165,6 +171,7 @@ export default function UserInfoCard() {
                     <Input 
                       type="text"
                       value={firstName}
+                      required
                       onChange={(e) => setFirstName(e.target.value)}
                     />
                   </div>
@@ -174,6 +181,7 @@ export default function UserInfoCard() {
                     <Input 
                       type="text"
                       value={lastName}
+                      required
                       onChange={(e) => setLastName(e.target.value)}
                     />
                   </div>
