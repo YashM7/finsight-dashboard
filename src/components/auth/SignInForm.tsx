@@ -57,6 +57,7 @@ export default function SignInForm() {
       const response = await login(payload);
       console.log("Login successful:");
       console.log(response);
+      localStorage.removeItem("chatMessages");
       window.location.href = "http://localhost:5173/";
     } catch (error) {
       console.log(error);

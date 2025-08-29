@@ -97,6 +97,7 @@ export default function SignUpForm() {
     try {
       const response = await signup(payload);
       console.log(response);
+      localStorage.removeItem("chatMessages");
       window.location.href = "http://localhost:5173/";
     } catch (error) {
       const axiosError = error as AxiosError;
