@@ -3,38 +3,14 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import axios from "axios";
 import toast from "react-hot-toast";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 export default function AIchat() {
   const [firstNameInitial, setFirstNameInitial] = useState("");
-
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const token = localStorage.getItem("authToken");
-
-        const response = await axios.get(`${BACKEND_URL}/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setFirstNameInitial(response.data.firstName.charAt(0).toUpperCase());
-      } catch (error) {
-        console.error("Error fetching user details", error);
-        toast.error("You have been logged out because of inactivity.");
-        setTimeout(function () {
-          // clear chat history on logout
-          localStorage.removeItem("chatMessages");
-          window.location.href = `${FRONTEND_URL}/signin`;
-        }, 4000);
-      }
-    };
-    fetchUserDetails();
-  }, []);
-
-  // ✅ Load chat history from localStorage
   const [messages, setMessages] = useState<
     { role: "user" | "bot"; text: string }[]
   >(() => {
@@ -48,11 +24,36 @@ export default function AIchat() {
           },
         ];
   });
-
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  // ✅ Save chat history to localStorage
+  // Fetch user details (for avatar initial)
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+
+        const response = await axios.get(`${BACKEND_URL}/user`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setFirstNameInitial(
+          response.data.firstName.charAt(0).toUpperCase()
+        );
+      } catch (error) {
+        console.error("Error fetching user details", error);
+        toast.error("You have been logged out because of inactivity.");
+        setTimeout(function () {
+          localStorage.removeItem("chatMessages");
+          window.location.href = `${FRONTEND_URL}/signin`;
+        }, 4000);
+      }
+    };
+    fetchUserDetails();
+  }, []);
+
+  // Persist messages in localStorage
   useEffect(() => {
     localStorage.setItem("chatMessages", JSON.stringify(messages));
   }, [messages]);
@@ -79,8 +80,30 @@ export default function AIchat() {
         }
       );
 
-      // Add bot response
-      setMessages((prev) => [...prev, { role: "bot", text: response.data }]);
+      const fullText = response.data;
+
+      // Add empty bot message placeholder
+      setMessages((prev) => [...prev, { role: "bot", text: "" }]);
+
+      // Typing effect: 3 chars every 10ms
+      let index = 0;
+      const typingInterval = setInterval(() => {
+        index += 3;
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: "bot",
+            text: fullText.slice(0, index),
+          };
+          return updated;
+        });
+
+        if (index >= fullText.length) {
+          clearInterval(typingInterval);
+          setIsTyping(false);
+        }
+      }, 10);
+
     } catch (error) {
       console.error("AI API error:", error);
       setMessages((prev) => [
@@ -90,18 +113,31 @@ export default function AIchat() {
           text: "⚠️ Oops! Something went wrong while fetching AI response.",
         },
       ]);
-    } finally {
       setIsTyping(false);
     }
   };
 
-  
+  // Scroll to bottom when messages update
   useEffect(() => {
     const chatContainer = document.getElementById("chat-container");
     if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      chatContainer.scrollTo({
+        top: chatContainer.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [messages, isTyping]);
+
+  // Scroll to bottom on mount
+  useEffect(() => {
+    const chatContainer = document.getElementById("chat-container");
+    if (chatContainer) {
+      chatContainer.scrollTo({
+        top: chatContainer.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
   return (
     <div>
@@ -140,23 +176,27 @@ export default function AIchat() {
                 msg.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              
+              {/* Bot message */}
               {msg.role === "bot" && (
                 <>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                     AI
                   </div>
-                  <div className="max-w-[70%] px-4 py-2 rounded-xl shadow-sm text-sm leading-relaxed bg-gray-200 dark:bg-slate-700 dark:text-white rounded-tl-none">
-                    {msg.text}
+                  <div className="max-w-[70%] px-4 py-2 rounded-xl shadow-sm text-sm leading-relaxed bg-gray-200 dark:bg-slate-700 dark:text-white rounded-tl-none prose prose-sm dark:prose-invert">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {msg.text}
+                    </ReactMarkdown>
                   </div>
                 </>
               )}
 
-              
+              {/* User message */}
               {msg.role === "user" && (
                 <>
-                  <div className="max-w-[70%] px-4 py-2 rounded-xl shadow-sm text-sm leading-relaxed bg-indigo-500 text-white rounded-tr-none">
-                    {msg.text}
+                  <div className="max-w-[70%] px-4 py-2 rounded-xl shadow-sm text-sm leading-relaxed bg-indigo-500 text-white rounded-tr-none prose prose-sm">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {msg.text}
+                    </ReactMarkdown>
                   </div>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-md bg-gradient-to-r from-pink-400 to-pink-600 text-white">
                     {firstNameInitial}
@@ -166,8 +206,8 @@ export default function AIchat() {
             </div>
           ))}
 
-          {/* Typing indicator */}
-          {isTyping && (
+          {/* Typing indicator (while waiting for backend) */}
+          {isTyping && messages[messages.length - 1]?.role !== "bot" && (
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
                 AI
@@ -193,18 +233,6 @@ export default function AIchat() {
               disabled={isTyping}
               className="flex-1 bg-transparent border-none outline-none px-2 py-1 text-sm text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
-            <button
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
-              aria-label="Attach file"
-            >
-              <i className="fas fa-paperclip"></i>
-            </button>
-            <button
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
-              aria-label="Voice input"
-            >
-              <i className="fas fa-microphone"></i>
-            </button>
             <button
               onClick={handleSend}
               disabled={isTyping}
