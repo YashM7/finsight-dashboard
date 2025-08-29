@@ -60,7 +60,7 @@ export default function BalanceCard() {
                     </h4>
                     <br />
                     </>
-                )
+                  )
                 }
             </div>
         </div>
@@ -74,12 +74,18 @@ export default function BalanceCard() {
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
               Income
             </h3>
-            <h4 className="mt-2 font-bold text-title-sm text-green-500">
-              {`${income?.toLocaleString(undefined, {
-                    style: "currency",
-                    currency: "USD",    
-                  })}`}
-            </h4>
+            {loading ? (
+              <h3 className="mt-2 font-bold text-title-sm text-green-500">Loading...</h3>
+            ) : (
+                <>
+                  <h4 className="mt-2 font-bold text-title-sm text-green-500">
+                    {`${income?.toLocaleString(undefined, {
+                          style: "currency",
+                          currency: "USD",    
+                        })}`}
+                  </h4>
+                </>
+              )}
           </div>
         </div>
       </div>
@@ -93,12 +99,18 @@ export default function BalanceCard() {
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
               Expense
             </h3>
-            <h4 className="mt-2 font-bold text-title-sm text-red-500">
-              {`${expense?.toLocaleString(undefined, {
-                    style: "currency",
-                    currency: "USD",    
-                  })}`}
-            </h4>
+            {loading ? (
+              <h3 className="mt-2 font-bold text-title-sm text-red-500">Loading...</h3>
+            ) : (
+              <>
+                <h4 className="mt-2 font-bold text-title-sm text-red-500">
+                  {`${expense?.toLocaleString(undefined, {
+                        style: "currency",
+                        currency: "USD",    
+                      })}`}
+                </h4>
+              </>
+            )}
           </div>
         </div>
       </div>
