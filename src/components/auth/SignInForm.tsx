@@ -123,7 +123,7 @@ export default function SignInForm() {
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="info@gmail.com"
+                    placeholder="demo@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                    />
@@ -134,7 +134,7 @@ export default function SignInForm() {
                   </Label>
                   <div className="relative">
                     <Input
-                      placeholder="Enter your password"
+                      placeholder="demo@gmail.com"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
