@@ -148,7 +148,7 @@ export default function SignUpForm() {
         <p className="text-sm text-gray-600 dark:text-gray-300">
           {backendStatus === "online"
             ? "All Systems Online"
-            : "⏳ Starting backend service, please wait up to 30s..."}
+            : "⏳ Starting backend service, please wait up to 60s..."}
         </p>
       </div>
       
