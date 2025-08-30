@@ -10,6 +10,7 @@ import { login, LoginPayload } from "../../api/auth";
 
 // Base URL from .env file
 const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 export default function SignInForm() {
 
@@ -24,7 +25,6 @@ export default function SignInForm() {
     const checkBackend = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/user/ping`);
-        console.log(res);
         if (res.status === 200) {
           setBackendStatus("online");
         } else {
@@ -58,7 +58,7 @@ export default function SignInForm() {
       console.log("Login successful:");
       console.log(response);
       localStorage.removeItem("chatMessages");
-      window.location.href = "http://localhost:5173/";
+      window.location.href = `${FRONTEND_URL}`;
     } catch (error) {
       console.log(error);
       const axiosError = error as AxiosError;

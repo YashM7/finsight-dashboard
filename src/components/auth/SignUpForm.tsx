@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 
 // Base URL from .env file
 const BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_API_BASE_URL;
 
 
 export default function SignUpForm() {
@@ -98,7 +99,7 @@ export default function SignUpForm() {
       const response = await signup(payload);
       console.log(response);
       localStorage.removeItem("chatMessages");
-      window.location.href = "http://localhost:5173/";
+      window.location.href = `${FRONTEND_URL}`;
     } catch (error) {
       const axiosError = error as AxiosError;
       console.error("Signup failed:", error);
@@ -114,7 +115,7 @@ export default function SignUpForm() {
       ));
 
         setTimeout(() => {
-          window.location.href = "http://localhost:5173/signin";
+          window.location.href = `${FRONTEND_URL}/signin`;
         }, 3000);
 
         return;
