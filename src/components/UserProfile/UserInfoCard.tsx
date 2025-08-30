@@ -158,7 +158,7 @@ export default function UserInfoCard() {
               <span>First Name and Last Name cannot be empty.</span>
             </p>
           </div>
-          <form className="flex flex-col">
+          <form className="flex flex-col" onSubmit={handleSave}>
             <div className="custom-scrollbar overflow-y-auto px-2 pb-3">
               <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
@@ -198,10 +198,10 @@ export default function UserInfoCard() {
               </div>
             </div>
             <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModal}>
+              <Button size="sm" variant="outline" type="button" onClick={closeModal}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button size="sm" type="submit">
                 Save Changes
               </Button>
             </div>
