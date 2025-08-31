@@ -22,6 +22,14 @@ export default function SignInForm() {
   );
 
   useEffect(() => {
+
+    toast(
+      "Note: The backend is hosted on a free service. If it has been idle, it may take up to 60 seconds or more to wake up. After that, all requests will respond normally.",
+      {
+        duration: 10000,
+      }
+    );
+
     const checkBackend = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/user/ping`);
