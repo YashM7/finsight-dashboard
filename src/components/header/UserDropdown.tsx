@@ -25,7 +25,7 @@ export default function UserDropdown() {
 
   function handleLogout() {
     localStorage.removeItem("authToken");
-    window.location.href = "https://trackzen-quv7.onrender.com";
+    window.location.href = "https://finsight-landingpage.netlify.app";
   }
 
   const [userDetails, setuserDetails] = useState<UserDetails>();
