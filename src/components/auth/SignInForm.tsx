@@ -103,6 +103,9 @@ export default function SignInForm() {
       alert("Login failed. Please refresh the page and try again!");
       window.location.reload();
     }
+    finally {
+      setIsLoading(false);
+    }
   }
 
   return (
