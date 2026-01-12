@@ -22,6 +22,8 @@ type AddTransactionRequest = {
 };
 
 export default function AddIncome() {
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<AddTransactionRequest>({
     merchant: "",
     amount: 0,
@@ -105,15 +107,27 @@ export default function AddIncome() {
     console.log(finalFormData);
     try {
       const token = localStorage.getItem("authToken");
-      await axios.post(`${BACKEND_URL}/transactions`, finalFormData, {
+      setIsSubmitting(true);
+      const postPromise = axios.post(`${BACKEND_URL}/transactions`, finalFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      toast.success("Transaction added successfully.", {
-        duration: 5000, // in milliseconds
-      });
+      toast.promise(
+        postPromise,
+        {
+          loading: "Adding income...",
+          success: "Income added successfully!",
+          error: "Failed to add income.",
+        },
+        {
+          duration: 5000,
+        }
+      )
+      .finally(() => {
+        setIsSubmitting(false);
+      })
       setFormData({
         merchant: "",
         amount: 0,
@@ -249,10 +263,17 @@ export default function AddIncome() {
             <div className="text-center">
               <button
                 type="submit"
-                className="inline-flex items-center px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isSubmitting}
+                className={`inline-flex items-center px-6 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500
+                  ${
+                    isSubmitting
+                      ? "bg-green-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
               >
-                Add Income
+                {isSubmitting ? "Adding..." : "Add Income"}
               </button>
+
             </div>
           </form>
         </div>
