@@ -20,6 +20,7 @@ export default function SignInForm() {
   const [backendStatus, setBackendStatus] = useState<"starting" | "online">(
     "starting"
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
 
@@ -76,6 +77,8 @@ export default function SignInForm() {
       alert("Please fill in all fields.");
       return;
     }
+
+    setIsLoading(true);
 
     // Prepare the payload
     const payload: LoginPayload = {
@@ -175,7 +178,7 @@ export default function SignInForm() {
                 <div className="flex items-center justify-between">
                 </div>
                 <div>
-                  <button
+                  {/* <button
                     onClick={handleClick}
                     disabled={backendStatus !== "online"}   // 🔒 disable if backend is not ready
                     className={`flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg shadow-theme-xs
@@ -185,6 +188,44 @@ export default function SignInForm() {
                       }`}
                   >
                     Sign In
+                  </button> */}
+                  <button
+                    onClick={handleClick}
+                    disabled={backendStatus !== "online" || isLoading}
+                    className={`flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg shadow-theme-xs
+                      ${
+                        backendStatus !== "online" || isLoading
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-brand-500 hover:bg-brand-600"
+                      }`}
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="w-4 h-4 animate-spin"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          />
+                        </svg>
+                        Signing in...
+                      </span>
+                    ) : (
+                      "Sign In"
+                    )}
                   </button>
                 </div>
               </div>
