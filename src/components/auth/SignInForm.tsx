@@ -40,7 +40,7 @@ export default function SignInForm() {
           </button>
 
           {/* Message */}
-          <p className="text-lg leading-relaxed pr-6">
+          <p className="text-base leading-relaxed pr-6">
             <strong>Note:</strong> The backend is hosted on a free service. If it has
             been idle, it may take up to 60 seconds or more to wake up. After that,
             all requests will respond normally.
