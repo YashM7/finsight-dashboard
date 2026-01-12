@@ -28,10 +28,32 @@ export default function SignUpForm() {
 
   useEffect(() => {
 
-    toast(
-      "Note: The backend is hosted on a free service. If it has been idle, it may take up to 60 seconds or more to wake up. After that, all requests will respond normally.",
+    toast.custom(
+      (t) => (
+        <div
+          className={`relative max-w-md w-full bg-white text-gray-900 px-6 py-4 rounded-2xl shadow-lg transition-opacity duration-300 ${
+            t.visible ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="absolute top-3 right-3 text-black/40 hover:text-black"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+
+          {/* Message */}
+          <p className="text-lg leading-relaxed pr-6">
+            <strong>Note:</strong> The backend is hosted on a free service. If it has
+            been idle, it may take up to 60 seconds or more to wake up. After that,
+            all requests will respond normally.
+          </p>
+        </div>
+      ),
       {
-        duration: 10000,
+        duration: Infinity,
       }
     );
 
